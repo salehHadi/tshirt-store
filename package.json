@@ -1,0 +1,31 @@
+{
+  "name": "tshirt-store",
+  "version": "1.0.0",
+  "description": "a backend tshirt-store api",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "author": "Saleh H. Aburah",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cloudinary": "^1.33.0",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-fileupload": "^1.4.0",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^6.8.3",
+    "morgan": "^1.10.0",
+    "nodemailer": "^6.8.0",
+    "stripe": "^11.6.0",
+    "swagger-ui-express": "^4.6.0",
+    "validator": "^13.7.0",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
