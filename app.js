@@ -12,7 +12,7 @@ const swaggerDocument = YAML.load("./swagger.yaml");
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // temp check
-app.set("view engin", "ejs");
+app.set("view engine", "ejs");
 
 // regular middleware
 app.use(express.json());
@@ -34,13 +34,12 @@ app.use(morgan("tiny"));
 const home = require("./routes/home");
 const user = require("./routes/user");
 
-// small test
-app.get("/singuptest", (req, res) => {
-  res.render("singuptest");
-});
-
 // router middleware
 app.use("/api/v1", home);
 app.use("/api/v1", user);
 
+// small test
+app.get("/singuptest", (req, res) => {
+  res.render("singuptest");
+});
 module.exports = app;
