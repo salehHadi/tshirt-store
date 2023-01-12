@@ -1,32 +1,46 @@
-const express = require('express');
+const express = require("express");
 require("dotenv").config();
 const app = express();
-const morgan = require('morgan');
-const cookieParser = require('cookie-parser');
-const fileUpload = require('express-fileupload');
+const morgan = require("morgan");
+const cookieParser = require("cookie-parser");
+const fileUpload = require("express-fileupload");
 
 // swagger Documenation
-const swaggerUi = require('swagger-ui-express');
-const YAML = require('yamljs');
-const swaggerDocument = YAML.load('./swagger.yaml');
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+const swaggerUi = require("swagger-ui-express");
+const YAML = require("yamljs");
+const swaggerDocument = YAML.load("./swagger.yaml");
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+// temp check
+app.set("view engin", "ejs");
 
 // regular middleware
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 
 // cookie and fileUpload
 app.use(cookieParser());
-app.use(fileUpload());
+app.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: "/tmp/",
+  })
+);
 
 // morgan middleware
-app.use(morgan('tiny'));
+app.use(morgan("tiny"));
 
 // import all routes here
-const home = require('./routes/home');
+const home = require("./routes/home");
+const user = require("./routes/user");
 
+// small test
+app.get("/singuptest", (req, res) => {
+  res.render("singuptest");
+});
 
 // router middleware
-app.use('/api/v1', home);
+app.use("/api/v1", home);
+app.use("/api/v1", user);
 
-module.exports = app
+module.exports = app;
