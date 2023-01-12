@@ -38,7 +38,7 @@ const user = require("./routes/user");
 app.use("/api/v1", home);
 app.use("/api/v1", user);
 
-// small test
+// small test route for uploding the photo
 app.get("/singuptest", (req, res) => {
   res.render("singuptest");
 });
