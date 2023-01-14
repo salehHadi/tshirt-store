@@ -3,6 +3,7 @@ const BigPromiss = require("../middlewares/bigPromiss");
 const CustomError = require("../utils/customError");
 const cookieToken = require("../utils/cookieToken");
 const fileUpload = require("express-fileupload");
+const mailHelper = require("../utils/mailHelper");
 const cloudinary = require("cloudinary").v2;
 
 exports.signup = BigPromiss(async (req, res, next) => {
@@ -72,4 +73,45 @@ exports.logout = BigPromiss(async (req, res, next) => {
     success: true,
     message: "logout is completed",
   });
+});
+
+exports.forgotPassword = BigPromiss(async (req, res, next) => {
+  const { email } = req.body;
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    return next(new CustomError(`email is not exssist or typed it wrong`, 400));
+  }
+
+  const forgotToken = user.generateForgotPasswordToken();
+
+  await user.save({ validateBeforeSave: false });
+
+  // he said req.get("host"): is better because it gave me full host name ||req.hostname
+  const myUrl = `${req.protocol}//${req.get(
+    "host"
+  )}/password/reset/${forgotToken}`;
+
+  const message = `Cope and past below URL in your browser and hit Enter \n\n ${myUrl}`;
+
+  try {
+    await mailHelper({
+      email: user.email,
+      subject: `T-store reset Password`, // Subject line
+      message: message,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: `Email sent successfuly`,
+    });
+  } catch (error) {
+    (user.forgotPasswordToken = undefined),
+      (user.forgotPasswordExpiry = undefined);
+
+    await user.save({ validateBeforeSave: false });
+
+    return next(new CustomError(error.message, 500));
+  }
 });
