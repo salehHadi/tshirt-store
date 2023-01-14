@@ -34,3 +34,42 @@ exports.signup = BigPromiss(async (req, res, next) => {
   });
   cookieToken(user, res);
 });
+
+exports.login = BigPromiss(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  // check for email or password
+  if (!email || !password) {
+    return next(new CustomError("please provide email and password"), 400);
+  }
+
+  // get user data from the database
+  const user = await User.findOne({ email }).select("+password");
+  if (!user) {
+    return next(
+      new CustomError("email or password does not match or exsist.", 400)
+    );
+  }
+
+  // check if the password is valid
+  const isPasswordCorrect = await user.isValidatedPassword(password);
+  if (!isPasswordCorrect) {
+    return next(
+      new CustomError("email or password does not match or exsist", 400)
+    );
+  }
+  // generate cookie and token
+  cookieToken(user, res);
+});
+
+exports.logout = BigPromiss(async (req, res, next) => {
+  res.cookie("token", null, {
+    expires: new Date(Date.now()),
+    httpOnly: true,
+  });
+
+  res.status(200).json({
+    success: true,
+    message: "logout is completed",
+  });
+});
