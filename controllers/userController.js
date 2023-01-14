@@ -5,6 +5,7 @@ const cookieToken = require("../utils/cookieToken");
 const fileUpload = require("express-fileupload");
 const mailHelper = require("../utils/mailHelper");
 const cloudinary = require("cloudinary").v2;
+const crypto = require("crypto");
 
 exports.signup = BigPromiss(async (req, res, next) => {
   if (!req.files) {
@@ -91,7 +92,7 @@ exports.forgotPassword = BigPromiss(async (req, res, next) => {
   // he said req.get("host"): is better because it gave me full host name ||req.hostname
   const myUrl = `${req.protocol}//${req.get(
     "host"
-  )}/password/reset/${forgotToken}`;
+  )}/api/v1/password/reset/${forgotToken}`;
 
   const message = `Cope and past below URL in your browser and hit Enter \n\n ${myUrl}`;
 
@@ -114,4 +115,31 @@ exports.forgotPassword = BigPromiss(async (req, res, next) => {
 
     return next(new CustomError(error.message, 500));
   }
+});
+
+exports.passwordReset = BigPromiss(async (req, res, next) => {
+  const token = req.params.token;
+
+  const encrypToken = crypto.createHash("sha256").update(token).digest("hex");
+
+  const user = await User.findOne({
+    encrypToken,
+    forgotPasswordExpiry: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    return next(new CustomError(`Token is invalied or expired`), 400);
+  }
+
+  if (req.body.password !== req.body.confirmPassword) {
+    return next(new CustomError(`password is not match`), 400);
+  }
+
+  user.password = req.body.password;
+  user.forgotPasswordToken = undefined;
+  user.forgotPasswordExpiry = undefined;
+
+  await user.save();
+
+  cookieToken(user, res);
 });
