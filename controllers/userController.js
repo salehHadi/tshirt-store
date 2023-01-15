@@ -152,3 +152,23 @@ exports.getLoggedInUserDetailes = BigPromiss(async (req, res, next) => {
     user,
   });
 });
+
+exports.changePassword = BigPromiss(async (req, res, next) => {
+  const userId = req.user.id;
+
+  const user = await User.findById(userId).select("+password");
+
+  const isOldPasswordCorrect = await user.isValidatedPassword(
+    req.body.oldPassword
+  );
+
+  if (!isOldPasswordCorrect) {
+    return next(new CustomError(`the oldPassword is not match`, 401));
+  }
+
+  user.password = req.body.newPassword;
+
+  await user.save();
+
+  cookieToken(user, res);
+});
