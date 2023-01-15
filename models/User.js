@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
     minlength: [6, `Password should not be less than 8 char`],
     select: false,
   },
-  roll: {
+  role: {
     type: String,
     default: "user",
   },
