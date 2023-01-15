@@ -17,7 +17,7 @@ exports.isLoggedIn = BigPromiss(async (req, res, next) => {
 
   next();
 });
-// l might need sometimes to back and nderstand this one below
+// I might need sometimes to back and nderstand this one below
 exports.customRole = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
