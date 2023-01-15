@@ -17,3 +17,14 @@ exports.isLoggedIn = BigPromiss(async (req, res, next) => {
 
   next();
 });
+// l might need sometimes to back and nderstand this one below
+exports.customRole = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new CustomError(`the soruce is not allowed to your role`, 402)
+      );
+    }
+    next();
+  };
+};
