@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, "it seems you missed something"],
-    minlength: [8, `Password should not be less than 8 char`],
+    minlength: [6, `Password should not be less than 8 char`],
     select: false,
   },
   roll: {
