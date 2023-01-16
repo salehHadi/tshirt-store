@@ -225,6 +225,52 @@ exports.adminAllUser = BigPromiss(async (req, res, next) => {
   });
 });
 
+exports.adminGetSingleUser = BigPromiss(async (req, res, next) => {
+  const user = await User.findById(req.params.id);
+
+  if (!user) {
+    return next(new CustomError(`user not found`), 400);
+  }
+  res.status(200).json({
+    success: true,
+    user,
+  });
+});
+
+exports.adminUpdateOneUserDetails = BigPromiss(async (req, res, next) => {
+  const newData = {
+    name: req.body.name,
+    email: req.body.email,
+    role: req.body.role,
+  };
+
+  const user = await User.findByIdAndUpdate(req.params.id, newData, {
+    new: true,
+    runValidators: true,
+    useFindAndModify: false,
+  });
+
+  res.status(200).json({
+    success: true,
+  });
+});
+
+exports.adminDeleteOneUser = BigPromiss(async (req, res, next) => {
+  const user = await User.findById(req.params.id);
+
+  if (!user) {
+    return next(new CustomError(`user are not definde`, 400));
+  }
+
+  await cloudinary.uploader.destroy(user.photo.id);
+  await user.delete();
+
+  res.status(200).json({
+    success: true,
+    message: `user ${user.email} has been deleted`,
+  });
+});
+
 exports.managerAllUser = BigPromiss(async (req, res, next) => {
   const users = await User.find({ role: "user" });
 
