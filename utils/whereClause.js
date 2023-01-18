@@ -1,8 +1,7 @@
-const { json } = require("express");
-
+// I have Filter bug Ero msg: TypeError: Converting circular structure to JSON
 class WhereClause {
   constructor(base, bigQ) {
-    (this.base = base), (this.bigQ = bigq);
+    (this.base = base), (this.bigQ = bigQ);
   }
 
   search() {
@@ -15,7 +14,7 @@ class WhereClause {
         }
       : {};
 
-    this.base = this.base.find(...searchword);
+    this.base = this.base.find({ ...searchword });
 
     return this;
   }
@@ -28,6 +27,7 @@ class WhereClause {
     delete copyQ["page"];
 
     // convert copeQ into a string copeQ
+
     let stringOfCopeQ = JSON.stringify(copyQ);
 
     stringOfCopeQ = stringOfCopeQ.replace(
@@ -38,6 +38,8 @@ class WhereClause {
     const jsonOfCopeQ = JSON.parse(stringOfCopeQ);
 
     this.base = this.base.find(jsonOfCopeQ);
+
+    return this;
   }
 
   pager() {

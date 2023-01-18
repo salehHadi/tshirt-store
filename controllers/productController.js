@@ -30,21 +30,30 @@ exports.addProduct = BigPromiss(async (req, res, next) => {
   req.body.user = req.user.id;
 
   const product = await Product.create(req.body);
+
+  res.status(200).json({
+    success: true,
+    product,
+  });
 });
 
 exports.getAllProducts = BigPromiss(async (req, res, next) => {
   const resultPerPage = 6;
   const totalProductCount = await Product.countDocuments();
 
-  const products = new WhereClause(Product.find({}), req.query)
-    .search()
-    .filter();
+  const productsObj = await new WhereClause(
+    Product.find({}),
+    req.query
+  ).search();
+  // I commint the filter for a while because I have a bug
+  // .filter();
 
+  let products = await productsObj.base;
   const filterProductNumber = products.length;
 
-  products.pager(resultPerPage);
+  productsObj.pager(resultPerPage);
 
-  products = await products.base;
+  products = await productsObj.base.clone();
 
   res.status(200).json({
     success: true,
