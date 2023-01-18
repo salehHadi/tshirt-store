@@ -1,3 +1,5 @@
+const { json } = require("express");
+
 class WhereClause {
   constructor(base, bigQ) {
     (this.base = base), (this.bigQ = bigq);
@@ -18,6 +20,26 @@ class WhereClause {
     return this;
   }
 
+  filter() {
+    const copyQ = { ...this.base };
+
+    delete copyQ["search"];
+    delete copyQ["limit"];
+    delete copyQ["page"];
+
+    // convert copeQ into a string copeQ
+    let stringOfCopeQ = JSON.stringify(copyQ);
+
+    stringOfCopeQ = stringOfCopeQ.replace(
+      /\b(gte|lte|gt|lt)\b/g,
+      (m) => `$${m}`
+    );
+
+    const jsonOfCopeQ = JSON.parse(stringOfCopeQ);
+
+    this.base = this.base.find(jsonOfCopeQ);
+  }
+
   pager() {
     let currentPage = 1;
 
@@ -25,6 +47,9 @@ class WhereClause {
       currentPage = this.bigQ.page;
     }
     const skipVal = this.bigQ.page * (currentPage - 1);
-    this.base.limit(this.bigQ.page).skip(skipVal);
+    this.base = this.base.limit(this.bigQ.page).skip(skipVal);
+    return this;
   }
 }
+
+module.exports = WhereClause;
