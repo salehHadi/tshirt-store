@@ -58,6 +58,20 @@ exports.getLoggedInUserOrder = BigPromiss(async (req, res, next) => {
   });
 });
 
+// admin routes
+exports.adminGetAllOrders = BigPromiss(async (req, res, next) => {
+  const orders = await Order.find({});
+
+  if (!orders) {
+    return next(new CustomError("not order been submit", 401));
+  }
+
+  res.status(200).json({
+    success: true,
+    orders,
+  });
+});
+
 exports.deleteOneOrder = BigPromiss(async (req, res, next) => {
   const order = await Order.findById(req.params.id);
 
