@@ -101,7 +101,7 @@ async function updateProductStock(productId, quantity) {
   await product.save({ validateBeforeSave: false });
 }
 
-exports.deleteOneOrder = BigPromiss(async (req, res, next) => {
+exports.adminDeleteOneOrder = BigPromiss(async (req, res, next) => {
   const order = await Order.findById(req.params.id);
 
   if (!order) {
