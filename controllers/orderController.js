@@ -72,6 +72,35 @@ exports.adminGetAllOrders = BigPromiss(async (req, res, next) => {
   });
 });
 
+exports.adminUpdateOneOrder = BigPromiss(async (req, res, next) => {
+  const order = await Order.findById(req.params.id);
+
+  if (order.orderStatus === "Delivered") {
+    return next(new CustomError("order is delivered", 401));
+  }
+
+  order.orderStatus = req.body.orderStatus;
+
+  order.orderItems.forEach(async (prod) => {
+    await updateProductStock(prod.product, prod.quantity);
+  });
+
+  await order.save();
+
+  res.status(200).json({
+    success: true,
+    order,
+  });
+});
+
+async function updateProductStock(productId, quantity) {
+  const product = await Product.findById(productId);
+
+  product.stock = product.stock - quantity;
+
+  await product.save({ validateBeforeSave: false });
+}
+
 exports.deleteOneOrder = BigPromiss(async (req, res, next) => {
   const order = await Order.findById(req.params.id);
 
