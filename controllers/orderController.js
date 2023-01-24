@@ -28,3 +28,46 @@ exports.createOrder = BigPromiss(async (req, res, next) => {
     order,
   });
 });
+
+exports.getOneOrder = BigPromiss(async (req, res, next) => {
+  const order = await Order.findById(req.params.id).populate(
+    "user",
+    "name email"
+  );
+
+  if (!order) {
+    return next(new CustomError("not order under this id", 401));
+  }
+
+  res.status(200).json({
+    success: true,
+    order,
+  });
+});
+
+exports.getLoggedInUserOrder = BigPromiss(async (req, res, next) => {
+  const order = await Order.find({ user: req.user._id });
+
+  if (!order) {
+    return next(new CustomError("not order under this id", 401));
+  }
+
+  res.status(200).json({
+    success: true,
+    order,
+  });
+});
+
+exports.deleteOneOrder = BigPromiss(async (req, res, next) => {
+  const order = await Order.findById(req.params.id);
+
+  if (!order) {
+    return next(new CustomError("not order under this id", 401));
+  }
+
+  order.remove();
+
+  res.status(200).json({
+    success: true,
+  });
+});
