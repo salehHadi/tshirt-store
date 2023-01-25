@@ -44,7 +44,7 @@ app.use("/api/v1", product);
 app.use("/api/v1", payment);
 app.use("/api/v1", order);
 
-// small test route for uploding the photo
+// small test route for uploding the photo.
 app.get("/singuptest", (req, res) => {
   res.render("singuptest");
 });
